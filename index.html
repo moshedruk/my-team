@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>my-team</title>
+    <script src="js/app.js" defer></script>
+    <link rel="stylesheet" href="app.css">
+</head>
+<body>
+    
+    <nav class="nav-bar">NBA-FANTAZY  2014 - 2024</nav>
+    <H1>my fantazy team</H1>
+    <div class="main-player">
+        <div class="player" id="PG">
+            <h2>PG</h2>
+            
+        </div>
+        <div class="player" id="SG">
+            <h2>SG</h2>
+           
+        </div>
+        <div class="player" id="SF">
+            <h2>SF</h2>
+            
+        </div>
+        <div class="player" id="PF">
+            <h2>PF</h2>
+            
+        </div>
+        <div class="player" id="C">
+            <h2>C</h2>
+            
+        </div>
+    </div>
+    <H1>NBA player Search</H1>
+    <div class="search">
+        <select name="position" id="select">
+            <option value="">Select Position</option>
+            <option value="PG">Point Guard</option>
+            <option value="SG">Shooting Guard</option>
+            <option value="SF">Small Forward</option>
+            <option value="PF">Power Forward</option>
+            <option value="C">Center</option>
+        </select>        
+        <input class="inprange" type="range" id="points" name="points"  min="0" max="20000">
+        <p>Points: <span id="pointsDisplay">0</span></p>
+        <input class="inprange" type="range" min="0" max="100" value="50" class="slider" id="twoPercent">
+        <p>twoPercent: <span id="towDisplay">50</span></p>
+        <input class="inprange"type="range" min="0" max="100" value="50" class="slider" id="threePercent">
+        <p>threePercent: <span id="treeDisplay">50</span></p>
+    </div>
+    
+        <button class="search-player" type="button">search-player</button>
+        <table class="div-table">
+            <tr>
+              
+              <th>player</th>
+              <th>position</th>
+              <th>points</th>
+              <th>FG%</th>
+              <th>3P%</th>
+              <th>ACTIONS</th>          
+            </tr>            
+                
+           
+                
+         
+        </table>
+    </div>
+
+    
+</body>
+</html>
