@@ -9,39 +9,35 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 const baseUrl = 'https://nbaserver-q21u.onrender.com/api/filter';
-const naeplayer = {
-    position: "C",
-    twoPercent: 20,
-    threePercent: 20,
-    points: 100,
-};
 let arrplayers = [];
-const deleteAlltr = () => {
-    const mainCard = document.querySelectorAll('.tr');
-    mainCard.forEach(e => e.innerHTML = "");
+let myTeam = [];
+const deleteAllRows = () => {
+    const tbody = document.querySelector('.div-table tbody');
+    if (tbody) {
+        tbody.innerHTML = '';
+    }
 };
 const createNewReoInTable = (arrplayers) => {
     if (arrplayers.length > 0) {
-        deleteAlltr();
+        deleteAllRows();
     }
     for (let player of arrplayers) {
         createNewReo(player);
     }
 };
 const addToTeam = (player) => {
-    console.log('Adding player' + player.position + 'to team');
+    myTeam.push(player);
     let card = document.querySelector(`#${player.position}`);
-    console.log('Removing player' + card.id + 'from table');
     card.remove();
     let newCard = document.createElement('div');
     newCard.id = player.position;
     newCard.classList.add('player');
     newCard.innerHTML = `
-            <h2>${player.position}</h2>
-            <p> <b>${player.playerName}</b></p>
-            <p>Team: ${player.team}</p>
-            <p>Three Percent: ${player.threePercent}%</p>
-             <p>.two Percent: ${player.twoPercent}%</p>            `;
+    <h2>${player.position}</h2>
+    <p> <b>${player.playerName}</b></p>
+    <p>Team: ${player.team}</p>
+    <p>Three Percent: ${player.threePercent}%</p>
+        <p>.two Percent: ${player.twoPercent}%</p>`;
     const mainCard = document.querySelector('.main-player');
     mainCard.appendChild(newCard);
 };
@@ -49,6 +45,7 @@ const createNewReo = (player) => {
     var _a, _b, _c, _d, _e;
     if (player) {
         let table = document.querySelector('.div-table');
+        let tdbody = document.querySelector('tbody');
         let tablRoe = document.createElement('tr');
         tablRoe.classList.add('tr');
         let dt1 = document.createElement('td');
@@ -71,7 +68,8 @@ const createNewReo = (player) => {
         });
         dtbtn.appendChild(btn);
         tablRoe.append(dt1, dt2, dt3, dt4, dt5, dtbtn);
-        table.append(tablRoe);
+        tdbody.appendChild(tablRoe);
+        table.append(tdbody);
     }
 };
 const showRange = () => {
@@ -120,11 +118,6 @@ const getPlayerFromApi = (player) => __awaiter(void 0, void 0, void 0, function*
         return [];
     }
 });
-const getDataToArray = () => __awaiter(void 0, void 0, void 0, function* () {
-    arrplayers = yield getPlayerFromApi(naeplayer);
-    createNewReoInTable(arrplayers);
-    return arrplayers;
-});
 const getValuesFromInput = () => {
     const valuePoints = document.querySelector('#points');
     const valueTwoPercent = document.querySelector('#twoPercent');
@@ -136,17 +129,31 @@ const getValuesFromInput = () => {
         threePercent: parseInt(valueThreePercent.value),
         position: valuefroom.options[valuefroom.selectedIndex].value
     };
-    // if(( parseInt(valuePoints.value)) || (parseInt(valueTwoPercent.value)) || ( parseInt(valueThreePercent.value)))
-    //     {
-    //     alert('Please enter valid numbers for points, two percent and three percent')
-    // }
-    console.log('Player object:', obj);
     return obj;
 };
+// Bonus........
+const postMyTeam = () => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const response = yield fetch(baseUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(myTeam),
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = yield response.json();
+        console.log('Success:', data);
+    }
+    catch (error) {
+        console.error('Error:', error);
+    }
+});
 showRange();
 const bodyForApi = document.querySelector('.search-player');
 bodyForApi.addEventListener('click', () => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('Search player button clicked');
     const newPlayer = getValuesFromInput();
     arrplayers = yield getPlayerFromApi(newPlayer);
     createNewReoInTable(arrplayers);

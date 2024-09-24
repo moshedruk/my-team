@@ -21,53 +21,54 @@ interface Player {
         ],
         points: number,
         __v?: 0
- }
+}
 
 const baseUrl:string = 'https://nbaserver-q21u.onrender.com/api/filter';   
    
-const naeplayer:Player = {
-    position: "C",
-    twoPercent: 20,
-    threePercent: 20,
-    points:100 , 
-}     
+
+
 let arrplayers: Player[] = []  
-const deleteAlltr =() :void => {
-    const mainCard: NodeListOf<HTMLTableRowElement> = document.querySelectorAll('.tr')!
-    mainCard.forEach(e => e.innerHTML = "");
-  
-}        
+let myTeam: Player[] = [] 
+
+const deleteAllRows = (): void => {    
+    const tbody = document.querySelector('.div-table tbody');
+    if (tbody) {
+        tbody.innerHTML = '';        
+    }
+}       
+
 const createNewReoInTable =  (arrplayers: Player[]) : void => {
     if(arrplayers.length > 0) {
-
-        deleteAlltr()
-    }
-    
+        deleteAllRows()
+       
+    }    
     for (let player of arrplayers) {
         createNewReo(player);
-    }}
-const addToTeam = (player: Player) : void => {
-        
-            console.log('Adding player'+player.position +'to team');
-            let card: HTMLDivElement = document.querySelector(`#${player.position}`)!
-            console.log('Removing player'+ card.id +'from table');
-            card.remove();
-            let newCard: HTMLDivElement = document.createElement('div')
-            newCard.id = player.position
-            newCard.classList.add('player')
-            newCard.innerHTML = `
-            <h2>${player.position}</h2>
-            <p> <b>${player.playerName}</b></p>
-            <p>Team: ${player.team}</p>
-            <p>Three Percent: ${player.threePercent}%</p>
-             <p>.two Percent: ${player.twoPercent}%</p>            `
-            const mainCard: HTMLDivElement = document.querySelector('.main-player')!
-            mainCard.appendChild(newCard);
-        }
-    
+}}
+
+const addToTeam = (player: Player) : void => {    
+    myTeam.push(player)    
+    let card: HTMLDivElement = document.querySelector(`#${player.position}`)!    
+    card.remove();
+    let newCard: HTMLDivElement = document.createElement('div')
+    newCard.id = player.position
+    newCard.classList.add('player')
+    newCard.innerHTML = `
+    <h2>${player.position}</h2>
+    <p> <b>${player.playerName}</b></p>
+    <p>Team: ${player.team}</p>
+    <p>Three Percent: ${player.threePercent}%</p>
+        <p>.two Percent: ${player.twoPercent}%</p>`
+    const mainCard: HTMLDivElement = document.querySelector('.main-player')!
+    mainCard.appendChild(newCard);
+}
+
 const createNewReo = (player: Player) : void => {
     if(player){
         let table: HTMLTableElement = document.querySelector('.div-table')!   
+
+        let tdbody: HTMLTableSectionElement = document.querySelector('tbody')!   
+
         let tablRoe:HTMLTableRowElement = document.createElement('tr'); 
         tablRoe.classList.add('tr')
         let dt1: HTMLTableCellElement = document.createElement('td')!        
@@ -90,32 +91,29 @@ const createNewReo = (player: Player) : void => {
         }) 
         dtbtn.appendChild(btn)
         tablRoe.append(dt1, dt2, dt3, dt4, dt5,dtbtn);
-        table.append(tablRoe);
+        tdbody.appendChild(tablRoe);
+        table.append(tdbody);
     }
 }
+
 const showRange = () => {
     const rangeInputpo :HTMLInputElement= document.querySelector("#points")!;
-    const rangeValuepo = document.querySelector('#pointsDisplay') as HTMLSpanElement;
-    
-    
+    const rangeValuepo = document.querySelector('#pointsDisplay') as HTMLSpanElement;    
     rangeInputpo.addEventListener('input', () => {
         rangeValuepo.textContent = rangeInputpo.value;
     });
     const rangeInputtow :HTMLInputElement= document.querySelector("#twoPercent")!;
-    const rangeValuetow = document.querySelector('#towDisplay') as HTMLSpanElement;
-    
-    
+    const rangeValuetow = document.querySelector('#towDisplay') as HTMLSpanElement;    
     rangeInputtow.addEventListener('input', () => {
         rangeValuetow.textContent = rangeInputtow.value;
     });
     const rangeInputtree :HTMLInputElement= document.querySelector("#threePercent")!;
-    const rangeValuetree = document.querySelector('#treeDisplay') as HTMLSpanElement;
-    
-    
+    const rangeValuetree = document.querySelector('#treeDisplay') as HTMLSpanElement;    
     rangeInputtree.addEventListener('input', () => {
         rangeValuetree.textContent = rangeInputtree.value;
     });
-}    
+}   
+
 const getPlayerFromApi = async (player:Player) :Promise<Player[]>  => {
     try {
         const response: Response = await fetch(`${baseUrl}`,{
@@ -141,17 +139,11 @@ const getPlayerFromApi = async (player:Player) :Promise<Player[]>  => {
         console.log('Player data fetched successfully:', data);
         return data;
     } catch (error) {
-        console.error(`Error fetching player data: ${(error as Error).message}`);
-        
+        console.error(`Error fetching player data: ${(error as Error).message}`);        
         return [];
     }
 }
 
-const getDataToArray = async () :Promise<Player[]> => {
-arrplayers = await getPlayerFromApi(naeplayer)
-createNewReoInTable(arrplayers)
-return arrplayers;
-}
 const getValuesFromInput = () : Player => {
     const valuePoints: HTMLInputElement = document.querySelector('#points')! 
     const valueTwoPercent: HTMLInputElement = document.querySelector('#twoPercent')!
@@ -163,22 +155,36 @@ const getValuesFromInput = () : Player => {
         twoPercent: parseInt(valueTwoPercent.value),
         threePercent: parseInt(valueThreePercent.value),
         position: valuefroom.options[valuefroom.selectedIndex].value
-    }
-    // if(( parseInt(valuePoints.value)) || (parseInt(valueTwoPercent.value)) || ( parseInt(valueThreePercent.value)))
-    //     {
-    //     alert('Please enter valid numbers for points, two percent and three percent')
-        
-    // }
-    console.log('Player object:', obj);
+    }    
     return obj;
 }
+
+// Bonus........
+const postMyTeam = async (): Promise<void> => {
+    try {
+        const response :Response = await fetch(baseUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(myTeam), 
+        });        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`); 
+        }
+        const data: Player[] = await response.json(); 
+        console.log('Success:', data); 
+    } catch (error) {
+        console.error('Error:', error); 
+    }
+};
+
+
 showRange()
 
 const bodyForApi:HTMLButtonElement = document.querySelector('.search-player')!
-    bodyForApi.addEventListener('click', async () => {
-        console.log('Search player button clicked');
+    bodyForApi.addEventListener('click', async () => {        
         const newPlayer:Player = getValuesFromInput()
         arrplayers = await getPlayerFromApi(newPlayer)
         createNewReoInTable(arrplayers)
-
     })
